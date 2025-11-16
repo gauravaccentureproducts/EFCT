@@ -4,6 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Excel File Comparison Tool</title>
+
+    <!-- PWA Requirements Start -->
+    <meta name="theme-color" content="#217346"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Excel Compare">
+    <meta name="application-name" content="Excel Compare">
+    <meta name="description" content="A tool to compare two Excel files and generate a detailed difference report.">
+
+    <!-- Inlined Web App Manifest -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Excel File Comparison Tool","short_name":"Excel Compare","description":"A tool to compare two Excel files and generate a detailed difference report.","start_url":".","display":"standalone","background_color":"#f0f9f4","theme_color":"#217346","icons":[{"src":"icons/icon-72x72.png","sizes":"72x72","type":"image/png"},{"src":"icons/icon-96x96.png","sizes":"96x96","type":"image/png"},{"src":"icons/icon-128x128.png","sizes":"128x128","type":"image/png"},{"src":"icons/icon-144x144.png","sizes":"144x144","type":"image/png"},{"src":"icons/icon-152x152.png","sizes":"152x152","type":"image/png"},{"src":"icons/icon-192x192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},{"src":"icons/icon-384x384.png","sizes":"384x384","type":"image/png"},{"src":"icons/icon-512x512.png","sizes":"512x512","type":"image/png"}]}'>
+
+    <!-- Icons (These must remain as external files in an /icons folder) -->
+    <link rel="apple-touch-icon" href="icons/icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512x512.png">
+    <!-- PWA Requirements End -->
+
     <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         /* ============================================
@@ -1781,6 +1800,75 @@
             
             console.log('Excel File Comparison Tool v3.1 initialized successfully');
         });
+    </script>
+    
+    <!-- Inlined Service Worker Registration Script -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            // The Service Worker code as a string
+            const swCode = `
+                const CACHE_NAME = 'excel-compare-v1';
+                const urlsToCache = [
+                  '/',
+                  'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js',
+                  'icons/icon-192x192.png',
+                  'icons/icon-512x512.png'
+                ];
+
+                self.addEventListener('install', event => {
+                  event.waitUntil(
+                    caches.open(CACHE_NAME)
+                      .then(cache => {
+                        console.log('Opened cache');
+                        return cache.addAll(urlsToCache);
+                      })
+                  );
+                });
+
+                self.addEventListener('fetch', event => {
+                  event.respondWith(
+                    caches.match(event.request)
+                      .then(response => {
+                        if (response) {
+                          return response;
+                        }
+                        return fetch(event.request);
+                      })
+                  );
+                });
+
+                self.addEventListener('activate', event => {
+                  const cacheWhitelist = [CACHE_NAME];
+                  event.waitUntil(
+                    caches.keys().then(cacheNames => {
+                      return Promise.all(
+                        cacheNames.map(cacheName => {
+                          if (cacheWhitelist.indexOf(cacheName) === -1) {
+                            return caches.delete(cacheName);
+                          }
+                        })
+                      );
+                    })
+                  );
+                });
+            `;
+
+            // Create a Blob from the string
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+
+            // Create a URL for the Blob
+            const swUrl = URL.createObjectURL(blob);
+
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register(swUrl)
+                    .then(registration => {
+                        console.log('Inlined Service Worker registered successfully:', registration);
+                    })
+                    .catch(error => {
+                        console.log('Inlined Service Worker registration failed:', error);
+                    });
+            });
+        }
     </script>
 </body>
 </html>
