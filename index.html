@@ -222,15 +222,15 @@
             font-weight: var(--font-weight-regular);
         }
 
+        /* UPDATED: Style for the image icon in the header */
         .app-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            display: inline-block; /* Ensures it behaves correctly in the flex container */
             width: 40px;
             height: 40px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: var(--radius-md);
-            font-size: var(--font-size-2xl);
+            padding: 4px; /* Gives a small border between the icon and its background */
+            vertical-align: middle;
         }
 
         /* Main Content - Always Centered */
@@ -789,7 +789,8 @@
         <!-- Header/Toolbar -->
         <header class="app-header" role="banner">
             <h1>
-                <span class="app-icon" aria-hidden="true">📊</span>
+                <!-- UPDATED: Replaced emoji with an img tag pointing to your icon -->
+                <img class="app-icon" src="icons/icon-96x96.png" alt="Excel Comparison Icon">
                 Excel File Comparison Tool
             </h1>
             <p>Compare two Excel files and generate a detailed difference report</p>
