@@ -1,11 +1,47 @@
 {
   "name": "Excel File Comparison Tool",
   "short_name": "Excel Compare",
-  "description": "A tool to compare two Excel files and generate a detailed difference report.",
-  "start_url": ".",
+  "description": "Compare two Excel files side-by-side and generate comprehensive difference reports with detailed cell-by-cell analysis. Perfect for accountants, data analysts, and professionals working with spreadsheets.",
+  "id": "/EFCT/",
+  "start_url": "./",
+  "scope": "/EFCT/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#f0f9f4",
   "theme_color": "#217346",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "utilities", "finance"],
+  "screenshots": [
+    {
+      "src": "screenshots/desktop-main.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Excel File Comparison - Main Interface"
+    },
+    {
+      "src": "screenshots/desktop-results.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Comparison Results Dashboard"
+    },
+    {
+      "src": "screenshots/mobile-upload.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile - File Upload"
+    },
+    {
+      "src": "screenshots/mobile-results.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile - Comparison Results"
+    }
+  ],
   "icons": [
     {
       "src": "icons/icon-72x72.png",
@@ -33,10 +69,21 @@
       "type": "image/png"
     },
     {
+      "src": "icons/icon-180x180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
       "src": "icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "icons/icon-384x384.png",
@@ -46,7 +93,92 @@
     {
       "src": "icons/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "New Comparison",
+      "short_name": "Compare",
+      "description": "Start a new Excel file comparison",
+      "url": "/EFCT/?action=compare",
+      "icons": [
+        {
+          "src": "icons/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Help",
+      "short_name": "Help",
+      "description": "View help and documentation",
+      "url": "/EFCT/?action=help",
+      "icons": [
+        {
+          "src": "icons/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/EFCT/",
+      "accept": {
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+        "application/vnd.ms-excel": [".xls"]
+      },
+      "icons": [
+        {
+          "src": "icons/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ],
+      "launch_type": "single-client"
+    }
+  ],
+  "display_override": ["window-controls-overlay", "standalone"],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "share_target": {
+    "action": "/EFCT/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "excel_files",
+          "accept": [
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/vnd.ms-excel",
+            ".xlsx",
+            ".xls"
+          ]
+        }
+      ]
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+excelcompare",
+      "url": "/EFCT/?compare=%s"
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": []
 }
