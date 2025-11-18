@@ -14,10 +14,10 @@
     <meta name="application-name" content="Excel Compare">
     <meta name="description" content="A tool to compare two Excel files and generate a detailed difference report.">
 
-    <!-- Inlined Web App Manifest -->
-    <link rel="manifest" href='data:application/manifest+json,{"name":"Excel File Comparison Tool","short_name":"Excel Compare","description":"A tool to compare two Excel files and generate a detailed difference report.","start_url":".","display":"standalone","background_color":"#f0f9f4","theme_color":"#217346","icons":[{"src":"icons/icon-72x72.png","sizes":"72x72","type":"image/png"},{"src":"icons/icon-96x96.png","sizes":"96x96","type":"image/png"},{"src":"icons/icon-128x128.png","sizes":"128x128","type":"image/png"},{"src":"icons/icon-144x144.png","sizes":"144x144","type":"image/png"},{"src":"icons/icon-152x152.png","sizes":"152x152","type":"image/png"},{"src":"icons/icon-192x192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},{"src":"icons/icon-384x384.png","sizes":"384x384","type":"image/png"},{"src":"icons/icon-512x512.png","sizes":"512x512","type":"image/png"}]}'>
+    <!-- External Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
 
-    <!-- Icons (These must remain as external files in an /icons folder) -->
+    <!-- Icons -->
     <link rel="apple-touch-icon" href="icons/icon-180x180.png">
     <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512x512.png">
@@ -222,14 +222,13 @@
             font-weight: var(--font-weight-regular);
         }
 
-        /* UPDATED: Style for the image icon in the header */
         .app-icon {
-            display: inline-block; /* Ensures it behaves correctly in the flex container */
+            display: inline-block;
             width: 40px;
             height: 40px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: var(--radius-md);
-            padding: 4px; /* Gives a small border between the icon and its background */
+            padding: 4px;
             vertical-align: middle;
         }
 
@@ -331,7 +330,7 @@
             text-align: center;
         }
 
-        /* File Status Badges - REMOVED BULLET POINT */
+        /* File Status Badges */
         .file-status {
             margin-top: var(--spacing-2);
             padding: var(--spacing-2) var(--spacing-3);
@@ -343,8 +342,6 @@
             justify-content: center;
             gap: var(--spacing-2);
         }
-
-        /* REMOVED THE ::before PSEUDO-ELEMENT FOR BULLET POINT */
 
         .status-success {
             background-color: var(--color-success-light);
@@ -587,7 +584,6 @@
             gap: var(--spacing-2);
         }
 
-        /* UPDATED: Fixed grid to show 4 columns in a single row */
         .results-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -732,7 +728,6 @@
            ACCESSIBILITY ENHANCEMENTS
            ============================================ */
         
-        /* High Contrast Mode Support */
         @media (prefers-contrast: high) {
             .btn {
                 border-width: 2px;
@@ -744,7 +739,6 @@
             }
         }
 
-        /* Reduced Motion Support */
         @media (prefers-reduced-motion: reduce) {
             *,
             *::before,
@@ -755,19 +749,16 @@
             }
         }
 
-        /* Focus Visible Enhancement */
         :focus-visible {
             outline: var(--focus-ring-width) solid var(--focus-ring-color);
             outline-offset: var(--focus-ring-offset);
         }
 
-        /* RTL Support */
         [dir="rtl"] .form-label-icon {
             margin-left: var(--spacing-2);
             margin-right: 0;
         }
 
-        /* Print Styles */
         @media print {
             body {
                 background: white;
@@ -789,7 +780,6 @@
         <!-- Header/Toolbar -->
         <header class="app-header" role="banner">
             <h1>
-                <!-- UPDATED: Replaced emoji with an img tag pointing to your icon -->
                 <img class="app-icon" src="icons/icon-96x96.png" alt="Excel Comparison Icon">
                 Excel File Comparison Tool
             </h1>
@@ -1803,10 +1793,9 @@
         });
     </script>
     
-    <!-- Inlined Service Worker Registration Script -->
+    <!-- Service Worker Registration Script -->
     <script>
         if ('serviceWorker' in navigator) {
-            // The Service Worker code as a string
             const swCode = `
                 const CACHE_NAME = 'excel-compare-v1';
                 const urlsToCache = [
@@ -1854,19 +1843,16 @@
                 });
             `;
 
-            // Create a Blob from the string
             const blob = new Blob([swCode], { type: 'application/javascript' });
-
-            // Create a URL for the Blob
             const swUrl = URL.createObjectURL(blob);
 
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register(swUrl)
                     .then(registration => {
-                        console.log('Inlined Service Worker registered successfully:', registration);
+                        console.log('Service Worker registered successfully:', registration);
                     })
                     .catch(error => {
-                        console.log('Inlined Service Worker registration failed:', error);
+                        console.log('Service Worker registration failed:', error);
                     });
             });
         }
