@@ -29,14 +29,14 @@
     },
     {
       "src": "screenshots/mobile-upload.png",
-      "sizes": "1080x1920",
+      "sizes": "1220x2540",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Mobile - File Upload"
     },
     {
       "src": "screenshots/mobile-results.png",
-      "sizes": "1080x1920",
+      "sizes": "1220x4220",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Mobile - Comparison Results"
