@@ -116,19 +116,6 @@
           "type": "image/png"
         }
       ]
-    },
-    {
-      "name": "Help",
-      "short_name": "Help",
-      "description": "View help and documentation",
-      "url": "/EFCT/?action=help",
-      "icons": [
-        {
-          "src": "icons/icon-192x192.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        }
-      ]
     }
   ],
   "file_handlers": [
@@ -152,33 +139,6 @@
   "launch_handler": {
     "client_mode": "navigate-existing"
   },
-  "edge_side_panel": {
-    "preferred_width": 400
-  },
-  "share_target": {
-    "action": "/EFCT/share",
-    "method": "POST",
-    "enctype": "multipart/form-data",
-    "params": {
-      "files": [
-        {
-          "name": "excel_files",
-          "accept": [
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "application/vnd.ms-excel",
-            ".xlsx",
-            ".xls"
-          ]
-        }
-      ]
-    }
-  },
-  "protocol_handlers": [
-    {
-      "protocol": "web+excelcompare",
-      "url": "/EFCT/?compare=%s"
-    }
-  ],
   "prefer_related_applications": false,
   "related_applications": []
 }
