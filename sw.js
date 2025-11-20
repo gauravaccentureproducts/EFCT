@@ -1,4 +1,4 @@
-const CACHE_NAME = 'excel-compare-v1';
+const CACHE_NAME = 'excel-compare-v4'; // Changed from v1 to v4
 const urlsToCache = [
   './',
   './index.html',
@@ -17,16 +17,16 @@ const urlsToCache = [
 
 // Install event - cache resources
 self.addEventListener('install', event => {
-  console.log('[Service Worker] Installing...');
+  console.log('[Service Worker] Installing v4.0.0...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('[Service Worker] Caching app shell');
+        console.log('[Service Worker] Caching app shell v4.0.0');
         return cache.addAll(urlsToCache);
       })
       .then(() => {
-        console.log('[Service Worker] Installed successfully');
-        return self.skipWaiting();
+        console.log('[Service Worker] v4.0.0 installed successfully');
+        return self.skipWaiting(); // Activate immediately
       })
       .catch(error => {
         console.error('[Service Worker] Installation failed:', error);
@@ -75,7 +75,7 @@ self.addEventListener('fetch', event => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', event => {
-  console.log('[Service Worker] Activating...');
+  console.log('[Service Worker] Activating v4.0.0...');
   const cacheWhitelist = [CACHE_NAME];
   
   event.waitUntil(
@@ -90,8 +90,8 @@ self.addEventListener('activate', event => {
       );
     })
     .then(() => {
-      console.log('[Service Worker] Activated successfully');
-      return self.clients.claim();
+      console.log('[Service Worker] v4.0.0 activated successfully');
+      return self.clients.claim(); // Take control immediately
     })
   );
 });
