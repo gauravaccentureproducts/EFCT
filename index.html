@@ -330,6 +330,40 @@
             text-align: center;
         }
 
+        /* Radio Button Group */
+        .radio-group {
+            display: flex;
+            gap: var(--spacing-6);
+            justify-content: center;
+            margin-top: var(--spacing-3);
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--color-accent-500);
+        }
+
+        .radio-option label {
+            font-size: var(--font-size-sm);
+            color: var(--color-neutral-700);
+            cursor: pointer;
+            font-weight: var(--font-weight-medium);
+        }
+
+        .radio-option input[type="radio"]:focus {
+            outline: var(--focus-ring-width) solid var(--focus-ring-color);
+            outline-offset: var(--focus-ring-offset);
+        }
+
         /* File Status Badges */
         .file-status {
             margin-top: var(--spacing-2);
@@ -722,6 +756,12 @@
             .copyright {
                 text-align: center;
             }
+
+            .radio-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--spacing-3);
+            }
         }
 
         /* ============================================
@@ -844,6 +884,39 @@
                         Enter custom filename or leave blank for auto-generated name
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="form-label-icon" aria-hidden="true">📊</span>
+                        Report Format
+                    </label>
+                    <div class="radio-group" role="radiogroup" aria-labelledby="format-label">
+                        <div class="radio-option">
+                            <input 
+                                type="radio" 
+                                id="formatSingle" 
+                                name="reportFormat" 
+                                value="single" 
+                                checked
+                                aria-describedby="format-hint"
+                            />
+                            <label for="formatSingle">Single Cell Format</label>
+                        </div>
+                        <div class="radio-option">
+                            <input 
+                                type="radio" 
+                                id="formatMulti" 
+                                name="reportFormat" 
+                                value="multi"
+                                aria-describedby="format-hint"
+                            />
+                            <label for="formatMulti">Multi Cell Format</label>
+                        </div>
+                    </div>
+                    <div id="format-hint" class="form-hint">
+                        Single Cell: All values in one cell | Multi Cell: Separate columns for each value
+                    </div>
+                </div>
             </section>
 
             <!-- Action Buttons -->
@@ -886,13 +959,16 @@
 
             <!-- Footer -->
             <footer class="app-footer" role="contentinfo">
-                <p>Excel File Comparison Tool v3.1 | Supports .xlsx and .xls formats | Maximum file size: 50MB</p>
-                <div class="copyright">Copyright: Gaurav Srivastava, SS&SC, Accenture Japan Ltd.</div>
+                <p>Excel File Comparison Tool v4.0.0 | Supports .xlsx and .xls formats | Maximum file size: 50MB</p>
+                <div class="copyright">© Tarang Srivastava</div>
             </footer>
         </div>
     </div>
 
     <script>
+        // App version constant
+        const APP_VERSION = '4.0.0';
+        
         class ExcelComparator {
             constructor() {
                 this.originalFile = null;
@@ -901,10 +977,18 @@
                 this.modifiedData = null;
                 this.comparisonResult = null;
                 this.differenceMap = new Map();
+                this.reportFormat = 'single'; // Default format
                 
                 this.initializeEventListeners();
                 this.setDefaultFilename();
                 this.announceToScreenReader('Excel File Comparison Tool loaded and ready');
+                this.logAppVersion();
+            }
+
+            logAppVersion() {
+                console.log(`%c Excel File Comparison Tool v${APP_VERSION} `, 
+                    'background: #217346; color: white; font-weight: bold; padding: 5px 10px;');
+                console.log('Ready to compare Excel files!');
             }
 
             announceToScreenReader(message) {
@@ -932,6 +1016,14 @@
 
                 document.getElementById('downloadBtn').addEventListener('click', () => {
                     this.downloadReport();
+                });
+
+                // Radio button listeners
+                document.querySelectorAll('input[name="reportFormat"]').forEach(radio => {
+                    radio.addEventListener('change', (e) => {
+                        this.reportFormat = e.target.value;
+                        console.log(`Report format changed to: ${this.reportFormat}`);
+                    });
                 });
 
                 this.setupDragAndDrop();
@@ -1378,14 +1470,17 @@
                     const originalData = XLSX.utils.sheet_to_json(originalSheet, { header: 1, defval: '' });
                     const modifiedData = XLSX.utils.sheet_to_json(modifiedSheet, { header: 1, defval: '' });
                     
-                    const comparisonData = this.createComparisonDataWithRedFields(originalData, modifiedData, sheetName);
+                    const comparisonData = this.reportFormat === 'single' 
+                        ? this.createComparisonDataSingleCell(originalData, modifiedData, sheetName)
+                        : this.createComparisonDataMultiCell(originalData, modifiedData, sheetName);
+                    
                     const comparisonSheet = XLSX.utils.aoa_to_sheet(comparisonData);
                     
                     XLSX.utils.book_append_sheet(workbook, comparisonSheet, `${sheetName}_Comparison`);
                 });
             }
 
-            createComparisonDataWithRedFields(originalData, modifiedData, sheetName) {
+            createComparisonDataSingleCell(originalData, modifiedData, sheetName) {
                 const maxRows = Math.max(originalData.length, modifiedData.length);
                 const maxCols = Math.max(
                     Math.max(...originalData.map(row => row.length)),
@@ -1398,6 +1493,7 @@
                 comparisonData.push(['📋 COMPARISON LEGEND']);
                 comparisonData.push(['🔴 = Field name where values have changed']);
                 comparisonData.push(['No symbol = Field name where values are identical']);
+                comparisonData.push(['Format: Single Cell (Original Value, Changed Value, Difference)']);
                 comparisonData.push(['']);
                 comparisonData.push(['Field Name', 'Value Comparison']);
                 comparisonData.push(['']);
@@ -1432,7 +1528,7 @@
                             const originalCellInfo = this.originalData.Sheets[sheetName][originalCellRef];
                             const modifiedCellInfo = this.modifiedData.Sheets[sheetName][modifiedCellRef];
                             
-                            const formattedComparison = this.createValueComparison(
+                            const formattedComparison = this.createValueComparisonSingleCell(
                                 originalValue, modifiedValue, 
                                 originalCellInfo, modifiedCellInfo, 
                                 sheetName, originalCellRef
@@ -1447,7 +1543,77 @@
                 return comparisonData;
             }
 
-            createValueComparison(originalValue, modifiedValue, originalCellInfo, modifiedCellInfo, sheetName, cellRef) {
+            createComparisonDataMultiCell(originalData, modifiedData, sheetName) {
+                const maxRows = Math.max(originalData.length, modifiedData.length);
+                const maxCols = Math.max(
+                    Math.max(...originalData.map(row => row.length)),
+                    Math.max(...modifiedData.map(row => row.length))
+                );
+
+                const comparisonData = [];
+                const sheetDifferences = this.differenceMap.get(sheetName) || new Set();
+
+                comparisonData.push(['📋 COMPARISON LEGEND']);
+                comparisonData.push(['🔴 = Field name where values have changed']);
+                comparisonData.push(['No symbol = Field name where values are identical']);
+                comparisonData.push(['Format: Multi Cell (Separate columns for Original, Changed, Difference)']);
+                comparisonData.push(['']);
+
+                // Create headers for multi-cell format
+                const headerRow = ['Field Name'];
+                for (let col = 1; col < maxCols; col++) {
+                    headerRow.push('Original Value', 'Changed Value', 'Difference');
+                }
+                comparisonData.push(headerRow);
+                comparisonData.push(['']);
+
+                for (let row = 0; row < maxRows; row++) {
+                    const comparisonRow = [];
+                    
+                    let hasAnyDifference = false;
+                    for (let col = 1; col < maxCols; col++) {
+                        const originalValue = (originalData[row] && originalData[row][col]) || '';
+                        const modifiedValue = (modifiedData[row] && modifiedData[row][col]) || '';
+                        
+                        if (this.valuesAreDifferent(originalValue, modifiedValue)) {
+                            hasAnyDifference = true;
+                            break;
+                        }
+                    }
+                    
+                    for (let col = 0; col < maxCols; col++) {
+                        const originalValue = (originalData[row] && originalData[row][col]) || '';
+                        const modifiedValue = (modifiedData[row] && modifiedData[row][col]) || '';
+
+                        if (col === 0) {
+                            if (hasAnyDifference) {
+                                comparisonRow.push(`🔴 ${originalValue}`);
+                            } else {
+                                comparisonRow.push(originalValue);
+                            }
+                        } else {
+                            const originalCellRef = XLSX.utils.encode_cell({ r: row, c: col });
+                            const modifiedCellRef = XLSX.utils.encode_cell({ r: row, c: col });
+                            const originalCellInfo = this.originalData.Sheets[sheetName][originalCellRef];
+                            const modifiedCellInfo = this.modifiedData.Sheets[sheetName][modifiedCellRef];
+                            
+                            const { original, changed, difference } = this.createValueComparisonMultiCell(
+                                originalValue, modifiedValue, 
+                                originalCellInfo, modifiedCellInfo, 
+                                sheetName, originalCellRef
+                            );
+                            
+                            comparisonRow.push(original, changed, difference);
+                        }
+                    }
+                    
+                    comparisonData.push(comparisonRow);
+                }
+
+                return comparisonData;
+            }
+
+            createValueComparisonSingleCell(originalValue, modifiedValue, originalCellInfo, modifiedCellInfo, sheetName, cellRef) {
                 const isOriginalBlank = originalValue === '' || originalValue === null || originalValue === undefined;
                 const isModifiedBlank = modifiedValue === '' || modifiedValue === null || modifiedValue === undefined;
                 
@@ -1497,6 +1663,62 @@
                 }
                 
                 return result;
+            }
+
+            createValueComparisonMultiCell(originalValue, modifiedValue, originalCellInfo, modifiedCellInfo, sheetName, cellRef) {
+                const isOriginalBlank = originalValue === '' || originalValue === null || originalValue === undefined;
+                const isModifiedBlank = modifiedValue === '' || modifiedValue === null || modifiedValue === undefined;
+                
+                if (isOriginalBlank && isModifiedBlank) {
+                    return { original: '', changed: '', difference: '' };
+                }
+                
+                const formattedOriginal = this.formatValue(originalValue, originalCellInfo, sheetName, cellRef);
+                const formattedModified = this.formatValue(modifiedValue, modifiedCellInfo, sheetName, cellRef);
+                
+                const originalIsPercentage = this.isPercentageCell(originalCellInfo, sheetName, cellRef, originalValue) || 
+                                           (typeof formattedOriginal === 'string' && formattedOriginal.includes('%'));
+                const modifiedIsPercentage = this.isPercentageCell(modifiedCellInfo, sheetName, cellRef, modifiedValue) || 
+                                           (typeof formattedModified === 'string' && formattedModified.includes('%'));
+                
+                const originalNumeric = this.getNumericValue(originalValue, originalIsPercentage);
+                const modifiedNumeric = this.getNumericValue(modifiedValue, modifiedIsPercentage);
+                
+                let differenceText = '';
+                
+                if (originalNumeric !== null && modifiedNumeric !== null) {
+                    if (originalIsPercentage && modifiedIsPercentage) {
+                        const difference = modifiedNumeric - originalNumeric;
+                        const sign = difference > 0 ? '+' : (difference < 0 ? '' : '');
+                        const formattedDiff = this.formatNumber(Math.abs(difference));
+                        
+                        if (Math.abs(difference) > 0.000001) {
+                            differenceText = `${sign}${formattedDiff}%`;
+                        } else {
+                            differenceText = '0%';
+                        }
+                    } else if (!originalIsPercentage && !modifiedIsPercentage) {
+                        const difference = modifiedNumeric - originalNumeric;
+                        const sign = difference > 0 ? '+' : (difference < 0 ? '' : '');
+                        const formattedDiff = this.formatNumber(Math.abs(difference));
+                        
+                        if (Math.abs(difference) > 0.000001) {
+                            differenceText = `${sign}${formattedDiff}`;
+                        } else {
+                            differenceText = '0';
+                        }
+                    } else {
+                        differenceText = 'N/A (type mismatch)';
+                    }
+                } else {
+                    differenceText = 'N/A (non-numeric)';
+                }
+                
+                return {
+                    original: formattedOriginal,
+                    changed: formattedModified,
+                    difference: differenceText
+                };
             }
 
             getNumericValue(value, isPercentage) {
@@ -1789,38 +2011,36 @@
 
             new ExcelComparator();
             
-            console.log('Excel File Comparison Tool v3.1 initialized successfully');
+            console.log(`Excel File Comparison Tool v${APP_VERSION} initialized successfully`);
         });
     </script>
     
-   <!-- Service Worker Registration Script -->
-<script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then(registration => {
-                    console.log('[App] Service Worker registered successfully:', registration.scope);
-                    
-                    // Check for updates
-                    registration.addEventListener('updatefound', () => {
-                        const newWorker = registration.installing;
-                        console.log('[App] Service Worker update found');
+    <!-- Service Worker Registration Script -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('[App] Service Worker registered successfully:', registration.scope);
                         
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                console.log('[App] New Service Worker available');
-                                // Optionally notify user about update
-                            }
+                        // Check for updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            console.log('[App] Service Worker update found');
+                            
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('[App] New Service Worker available - will activate on next page load');
+                                }
+                            });
                         });
+                    })
+                    .catch(error => {
+                        console.error('[App] Service Worker registration failed:', error);
                     });
-                })
-                .catch(error => {
-                    console.error('[App] Service Worker registration failed:', error);
-                });
-        });
-    } else {
-        console.warn('[App] Service Workers are not supported in this browser');
-    }
-</script>
+        } else {
+            console.warn('[App] Service Workers are not supported in this browser');
+        }
+    </script>
 </body>
 </html>
