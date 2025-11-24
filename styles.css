@@ -387,45 +387,6 @@ body {
     border: 1px solid var(--color-warning);
 }
 
-/* Info Section */
-.info-section {
-    margin: var(--spacing-4) 0;
-    padding: var(--spacing-4);
-    background: var(--color-info-light);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--color-info);
-}
-
-.info-section details {
-    cursor: pointer;
-}
-
-.info-section summary {
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-info-dark);
-    padding: var(--spacing-2);
-}
-
-.info-section ul {
-    list-style: none;
-    margin-top: var(--spacing-3);
-    padding-left: var(--spacing-4);
-}
-
-.info-section li {
-    margin-bottom: var(--spacing-2);
-    color: var(--color-info-dark);
-}
-
-.info-section kbd {
-    background: var(--color-neutral-0);
-    border: 1px solid var(--color-neutral-300);
-    border-radius: var(--radius-sm);
-    padding: 2px 6px;
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-}
-
 /* ============================================
    BUTTON COMPONENTS
    ============================================ */
@@ -840,8 +801,7 @@ body {
     }
     
     .btn,
-    .form-section,
-    .info-section {
+    .form-section {
         display: none;
     }
 
